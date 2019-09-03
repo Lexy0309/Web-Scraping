@@ -1,0 +1,95 @@
+<app-content-header 
+    [icon]="'today'" 
+    [title]="'ESPN Scraping'" 
+    [hideBreadcrumb]="false"
+    [hasBgImage]="true" 
+    [class]="'pb-4'"></app-content-header>
+
+<div fxLayout="column" fxLayout.gt-sm="row wrap" class="p-2">
+    <div fxFlex="100" class="p-2">
+        <mat-card>
+            <mat-card-header fxLayoutAlign="center">                
+                <mat-card-subtitle><h2>How many days are you going scrape at once?</h2></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxLayoutAlign="space-around">
+                <mat-form-field class="mx-2">
+                    <mat-select placeholder="Select Step" [(ngModel)]="scrapeUnit" name="scrapeUnit">
+                        <mat-option *ngFor="let eleStep of arrSteps" [value]="eleStep">
+                            {{eleStep}} days at once
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+        <mat-card>
+            <mat-card-header fxLayoutAlign="center">                
+                <mat-card-subtitle><h2>Select Date Range</h2></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxLayoutAlign="space-around">
+                <mat-spinner *ngIf="nLoading.LOADING" color="accent" [diameter]="30"></mat-spinner>
+                <mat-form-field>
+                    <input matInput [matDatepicker]="startDate" placeholder="Choose Start Date" (dateChange)="onStartDateChanged('change', $event)">
+                    <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                    <mat-datepicker #startDate></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput [matDatepicker]="endDate" placeholder="Choose End Date" (dateChange)="onEndDateChanged('change', $event)">
+                    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                </mat-form-field>
+                <button [disabled]="nLoading.LOADING" matInput mat-raised-button color="primary" class="btn-inside-formfield" (click)="onScrapeMatches()"> Scrape Matches</button>
+                <button [disabled]="nLoading.LOADING" matInput mat-raised-button color="primary" class="btn-inside-formfield" (click)="onScrapeMatchesMore()"> Scrape More</button>
+                <button *ngIf="nLoading.MATCH_SCRAPPING" [disabled]="nLoading.LOADING" matInput mat-raised-button color="primary" class="btn-inside-formfield" (click)="onScrapeBoxScore()">Scrape BoxScore</button>
+                <button *ngIf="nLoading.BOXSCORE_SCRAPPING" [disabled]="nLoading.LOADING" matInput mat-raised-button color="primary" class="btn-inside-formfield" (click)="onExportToCSV()">Export to CSV</button>
+                <!-- <button matInput mat-raised-button color="primary" class="btn-inside-formfield" (click)="onTesting()">Testing Button</button> -->
+            </mat-card-content>
+            
+        </mat-card>
+    </div>
+    <div *ngFor="let item of arrMatchesWithDate" fxFlex="100" class="p-2"> 
+        <mat-card>
+            <mat-card-header class="bg-accent p-1" fxLayoutAlign="space-between center">
+                <mat-card-title class="m-0"><h4>{{item.date}}</h4></mat-card-title>
+            </mat-card-header>
+            <div fxLayout="column" fxLayout.gt-sm="row wrap" class="p-2">
+                <div *ngFor="let match of item.matches" fxFlex="50" class="p-2">
+                    <mat-card>
+                        <mat-card-header class="bg-warn p-1" fxLayoutAlign="space-between center">
+                            <mat-card-title class="m-0"><h5>{{match.homeTeam + ' VS ' + match.awayTeam + ' ( ' + match.id + ' )'}}</h5></mat-card-title>
+                            <button mat-icon-button (click)=onDetailMatch(match.id)><mat-icon>person_pin</mat-icon></button>
+                            <button mat-icon-button (click)=onDetailBettingInfo(match.id)><mat-icon>table_chart</mat-icon></button>
+                        </mat-card-header>
+                        <mat-card-content fxLayoutAlign="space-around">
+                            <div fxLayout="column" fxLayout.gt-sm="row wrap" class="p-2 full-width">
+                                <div fxFlex="80" class="p-2">
+                                    <mat-list class="full-width">
+                                        <mat-list-item>
+                                            <img matListAvatar [src]="match.homeTeam_enblem" alt="image">
+                                            <div class="team-info">
+                                                <h4> {{match.homeTeam + ' : ' + match.homeTeam_finalscore + '(' + match.homeTeam_scores.join(', ') + ')'}} </h4>
+                                                <h4 *ngIf="match.bettingInfo"> {{'Spread : ' + match.bettingInfo.oddshark.home_spread}} </h4>
+                                                <!-- <h4> {{match.homeTeam_finalscore + '(' + match.homeTeam_scores.join(', ') + ')'}} </h4> -->
+                                            </div>
+                                        </mat-list-item>
+                                        <mat-list-item>
+                                            <img matListAvatar [src]="match.awayTeam_enblem" alt="image">
+                                            <div class="team-info">
+                                                <h4> {{match.awayTeam + ' : ' + match.awayTeam_finalscore + '(' + match.awayTeam_scores.join(', ') + ')'}} </h4>
+                                                <h4 *ngIf="match.bettingInfo"> {{'Spread : ' + match.bettingInfo.oddshark.away_spread}} </h4>
+                                                <!-- <h4> {{match.awayTeam_finalscore + '(' + match.awayTeam_scores.join(', ') + ')'}} </h4> -->
+                                            </div>
+                                        </mat-list-item>
+                                    </mat-list>
+                                </div>
+                                <div fxFlex="20" class="p-2" style="display: flex">
+                                    <h2 *ngIf="match.bettingInfo" style="margin: auto"> {{match.bettingInfo.oddshark.total}} </h2>
+                                </div>
+                            </div>
+                            
+                        </mat-card-content>
+                    </mat-card>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>

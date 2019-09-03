@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>{{data.homeTeam + ' VS ' + data.awayTeam + ' ( ' + data.id + ' )'}}</h1>
+<mat-dialog-content>
+    <div fxLayout="column" fxLayout.gt-sm="row wrap" class="p-2">
+        <div *ngFor="let boxscore of data.boxscore" fxFlex="100" class="p-2">
+            <mat-card>
+                <mat-card-header class="bg-accent p-1" fxLayoutAlign="space-between center">
+                    <mat-card-title class="m-0" style="display: flex;">
+                        <img matListAvatar [src]="boxscore.position === 'Home' ? data.homeTeam_enblem : data.awayTeam_enblem" alt="image" style="width: 40px; height: 40px;">
+                        <h5 style="height: fit-content; margin: auto; margin-left: 20px;">{{boxscore.position + ' : ' + boxscore.name}}</h5>
+                    </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <table mat-table *ngFor="let scoretable of boxscore.scoreValues; let nBoxScoreIndex = index" [dataSource]="scoretable" class="mat-elevation-z8 full-width" style="margin-top: 20px;">
+                        <ng-container *ngFor="let category of boxscore.scoreCategories[nBoxScoreIndex]; let nIndex = index" [matColumnDef]="category">
+                            <mat-header-cell *matHeaderCellDef> {{category}} </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{element[category]}} </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="boxscore.scoreCategories[nBoxScoreIndex]"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: boxscore.scoreCategories[nBoxScoreIndex];"></mat-row>
+                    </table>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="onCloseClick()" tabindex="-1">Close</button>
+</mat-dialog-actions>

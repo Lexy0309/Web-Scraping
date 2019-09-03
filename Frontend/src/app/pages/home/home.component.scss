@@ -1,0 +1,26 @@
+.events-list{
+    height: 97px;
+}
+.btn-inside-formfield {
+    height: 36px;
+}
+.team-info {
+    width: 100%;
+    margin-left: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+.full-width {
+    width: 100%;
+}
+.mat-cell:nth-child(1)
+{
+    flex: 0 0 18%;
+}
+.mat-header-cell:nth-child(1)
+{
+    flex: 0 0 18%;
+}
+.mat-card-header-text {
+    width: 100%
+}
